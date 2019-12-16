@@ -31,14 +31,18 @@ public class MainActivity extends AppCompatActivity {
         btnEnviar.setOnClickListener(new View.OnClickListener() {
             @Override
             public void onClick(View v) {
-                if (ValidadorCpf.isCPF(getCpfConvertido())) {
-                    Toast.makeText(MainActivity.this, ValidadorCpf.imprimeCpf(getCpfConvertido()),
-                            Toast.LENGTH_SHORT).show();
-                } else {
-                    Toast.makeText(MainActivity.this, "n deu", Toast.LENGTH_SHORT).show();
-                }
+                fazVerificacaoEEnviaToast();
             }
         });
+    }
+
+    private void fazVerificacaoEEnviaToast() {
+        if (ValidadorCpf.isCPF(getCpfConvertido())) {
+            Toast.makeText(MainActivity.this, ValidadorCpf.imprimeCpf(getCpfConvertido()),
+                    Toast.LENGTH_SHORT).show();
+        } else {
+            Toast.makeText(MainActivity.this, "CPF inválido", Toast.LENGTH_SHORT).show();
+        }
     }
 
     private void intanciandoUsuario() {
@@ -47,7 +51,7 @@ public class MainActivity extends AppCompatActivity {
     }
 
     private String getCpfConvertido() {
-        return cpf.getText().toString();//.replaceAll("[^0-9]", "");
+        return cpf.getText().toString().replaceAll("[^0-9]", "");
     }
 
     private void agrupaIdXml() {
