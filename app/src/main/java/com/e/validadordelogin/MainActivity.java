@@ -11,6 +11,9 @@ import androidx.appcompat.app.AppCompatActivity;
 import com.e.validadordelogin.model.Usuario;
 import com.e.validadordelogin.validacpf.ValidadorCpf;
 
+import java.util.regex.Matcher;
+import java.util.regex.Pattern;
+
 public class MainActivity extends AppCompatActivity {
 
     private EditText cpf;
@@ -32,13 +35,32 @@ public class MainActivity extends AppCompatActivity {
             @Override
             public void onClick(View v) {
                 fazVerificacaoEEnviaToast();
+
+                if (verificaSenha(senha.getText().toString().trim())) {
+                    Toast.makeText(MainActivity.this, "senha válida", Toast.LENGTH_SHORT).show();
+                } else {
+                    Toast.makeText(MainActivity.this, "inválido", Toast.LENGTH_SHORT).show();
+                }
             }
         });
     }
 
+    private boolean verificaSenha(final String senha) {
+
+        Pattern pattern;
+        Matcher matcher;
+
+        final String SENHA_PATTERN = "^(?=.*[0-9])(?=.*[a-z])(?=.*[A-Z])(?=.*[@#$%^&+=])(?=\\S+$).{4,}$";
+
+        pattern = Pattern.compile(SENHA_PATTERN);
+        matcher = pattern.matcher(senha);
+
+        return matcher.matches();
+    }
+
     private void fazVerificacaoEEnviaToast() {
         if (ValidadorCpf.isCPF(getCpfConvertido())) {
-            Toast.makeText(MainActivity.this, ValidadorCpf.imprimeCpf(getCpfConvertido()),
+            Toast.makeText(MainActivity.this, "CPF válido",
                     Toast.LENGTH_SHORT).show();
         } else {
             Toast.makeText(MainActivity.this, "CPF inválido", Toast.LENGTH_SHORT).show();
@@ -47,7 +69,6 @@ public class MainActivity extends AppCompatActivity {
 
     private void intanciandoUsuario() {
         new Usuario(getCpfConvertido(), senha.toString());
-
     }
 
     private String getCpfConvertido() {
