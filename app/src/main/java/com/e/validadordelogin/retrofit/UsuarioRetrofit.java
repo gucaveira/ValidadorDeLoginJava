@@ -11,8 +11,10 @@ public class UsuarioRetrofit {
     private final UsuarioService usuarioService;
 
     public UsuarioRetrofit() {
-        Retrofit retrofit = new Retrofit.Builder().baseUrl(BASE_URL)
-                .addConverterFactory(GsonConverterFactory.create()).build();
+        Retrofit retrofit = new Retrofit.Builder()
+                .baseUrl(BASE_URL)
+                .addConverterFactory(GsonConverterFactory.create())
+                .build();
         usuarioService = retrofit.create(UsuarioService.class);
     }
 

@@ -6,9 +6,10 @@ import java.util.List;
 
 import retrofit2.Call;
 import retrofit2.http.GET;
+import retrofit2.http.Path;
 
 public interface UsuarioService {
 
-    @GET
-    Call<List<Usuario>> buscarUsuario();
+    @GET("list/{id}")
+    Call<List<Usuario>> buscaUsuarioApi(@Path("id") String userid);
 }
