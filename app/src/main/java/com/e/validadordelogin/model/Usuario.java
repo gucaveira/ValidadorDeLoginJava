@@ -9,6 +9,9 @@ public class Usuario implements Serializable {
     @SerializedName("name")
     private String nome;
 
+    @SerializedName("age")
+    private String idade;
+
     @SerializedName("email")
     private String email;
 
@@ -29,6 +32,10 @@ public class Usuario implements Serializable {
 
     public void setNome(String nome) {
         this.nome = nome;
+    }
+
+    public String getIdade() {
+        return idade;
     }
 
     public String getEmail() {
