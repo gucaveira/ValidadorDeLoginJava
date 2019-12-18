@@ -1,5 +1,6 @@
 package com.e.validadordelogin.ui;
 
+import android.content.Intent;
 import android.os.Bundle;
 import android.widget.Button;
 import android.widget.EditText;
@@ -38,8 +39,8 @@ public class MainActivity extends AppCompatActivity {
 
     private void btnEnviar() {
         btnEnviar.setOnClickListener(v -> {
-            //enviaToast();
-            buscaUsuario();
+            enviaToast();
+            //buscaUsuario();
         });
     }
 
@@ -83,25 +84,28 @@ public class MainActivity extends AppCompatActivity {
     }
 
     private void enviaToast() {
-        enviaToasCpf();
-        enviaToastSenha();
+        if (enviaToastSenha() & enviaToasCpf()) {
+            Intent intent = new Intent(this, DadosDoUsuariosActivity.class);
+            startActivity(intent);
+        }
     }
 
-    private void enviaToasCpf() {
+    private boolean enviaToasCpf() {
         if (ValidadorCpf.isCPF(getCpfConvertido())) {
-            Toast.makeText(MainActivity.this, "CPF válido",
-                    Toast.LENGTH_SHORT).show();
+            return true;
         } else {
             Toast.makeText(MainActivity.this, "CPF inválido", Toast.LENGTH_SHORT).show();
         }
+        return false;
     }
 
-    private void enviaToastSenha() {
+    private boolean enviaToastSenha() {
         if (verificaSenha(senha.getText().toString().trim())) {
-            Toast.makeText(MainActivity.this, "senha válida", Toast.LENGTH_SHORT).show();
+            return true;
         } else {
             Toast.makeText(MainActivity.this, " senha inválido", Toast.LENGTH_SHORT).show();
         }
+        return false;
     }
 
     private void intanciandoUsuario() {
