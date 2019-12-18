@@ -2,7 +2,6 @@ package com.e.validadordelogin.ui;
 
 import android.content.Intent;
 import android.os.Bundle;
-import android.util.Patterns;
 import android.widget.Button;
 import android.widget.EditText;
 import android.widget.Toast;
@@ -37,7 +36,7 @@ public class MainActivity extends AppCompatActivity {
     }
 
     private void chamaProximaTela() {
-        if (enviaSenhaverificada() & enviaCpfVerificado()) {
+        if (enviaSenhaverificada() & (enviaCpfVerificado() || enviaEmailverificada())) {
             Intent intent = new Intent(this, DadosDoUsuariosActivity.class);
             startActivity(intent);
         }
@@ -62,6 +61,27 @@ public class MainActivity extends AppCompatActivity {
         matcher = pattern.matcher(senha);
 
         return matcher.matches();
+    }
+
+    public boolean verificaSeEhEmailOuCpf(final String senhaOuEmail) {
+        Pattern patterns;
+        Matcher matcher;
+
+        final String test = "^\\w+([.-]?\\w+)@\\w+([.-]?\\w+)(.\\w{1,3})+$";
+
+        patterns = Pattern.compile(test);
+        matcher = patterns.matcher(senhaOuEmail);
+
+        return matcher.matches();
+    }
+
+    public boolean enviaEmailverificada() {
+        if (verificaSeEhEmailOuCpf(cpf.getText().toString())) {
+            return true;
+        } else {
+            Toast.makeText(this, "E-mail inválido", Toast.LENGTH_SHORT).show();
+        }
+        return false;
     }
 
     private boolean enviaCpfVerificado() {
