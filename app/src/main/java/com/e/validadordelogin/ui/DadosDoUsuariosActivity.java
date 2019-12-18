@@ -21,13 +21,12 @@ public class DadosDoUsuariosActivity extends AppCompatActivity {
     private TextView idade;
     private TextView email;
 
-
     @Override
     protected void onCreate(Bundle savedInstanceState) {
         super.onCreate(savedInstanceState);
         setContentView(R.layout.activity_dados_do_usuarios);
-        buscaUsuario();
 
+        buscaUsuario();
         agrupaIdXml();
     }
 
@@ -45,8 +44,6 @@ public class DadosDoUsuariosActivity extends AppCompatActivity {
                     nome.setText(user.getNome());
                     idade.setText(user.getIdade());
                     email.setText(user.getEmail());
-
-                    Toast.makeText(DadosDoUsuariosActivity.this, user.getNome(), Toast.LENGTH_SHORT).show();
 
                 } else {
                     Toast.makeText(DadosDoUsuariosActivity.this, "Erro" + response.code(),

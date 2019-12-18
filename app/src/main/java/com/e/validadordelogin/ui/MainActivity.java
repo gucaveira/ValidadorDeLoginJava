@@ -2,6 +2,7 @@ package com.e.validadordelogin.ui;
 
 import android.content.Intent;
 import android.os.Bundle;
+import android.util.Patterns;
 import android.widget.Button;
 import android.widget.EditText;
 import android.widget.Toast;
@@ -10,16 +11,10 @@ import androidx.appcompat.app.AppCompatActivity;
 
 import com.e.validadordelogin.R;
 import com.e.validadordelogin.model.Usuario;
-import com.e.validadordelogin.retrofit.UsuarioRetrofit;
-import com.e.validadordelogin.retrofit.service.UsuarioService;
 import com.e.validadordelogin.validacpf.ValidadorCpf;
 
 import java.util.regex.Matcher;
 import java.util.regex.Pattern;
-
-import retrofit2.Call;
-import retrofit2.Callback;
-import retrofit2.Response;
 
 public class MainActivity extends AppCompatActivity {
 
@@ -38,37 +33,23 @@ public class MainActivity extends AppCompatActivity {
     }
 
     private void btnEnviar() {
-        btnEnviar.setOnClickListener(v -> {
-            enviaToast();
-            //buscaUsuario();
-        });
+        btnEnviar.setOnClickListener(click -> chamaProximaTela());
     }
 
-    private void buscaUsuario() {
+    private void chamaProximaTela() {
+        if (enviaSenhaverificada() & enviaCpfVerificado()) {
+            Intent intent = new Intent(this, DadosDoUsuariosActivity.class);
+            startActivity(intent);
+        }
+    }
 
-        UsuarioService service = new UsuarioRetrofit().getUsuarioService();
-        Call<Usuario> callUsuario = service.buscaUsuarioApi();
-
-        callUsuario.enqueue(new Callback<Usuario>() {
-            @Override
-            public void onResponse(Call<Usuario> call, Response<Usuario> response) {
-                if (response.isSuccessful()) {
-                    Usuario user = response.body();
-
-                    Toast.makeText(MainActivity.this, user.getNome(), Toast.LENGTH_SHORT).show();
-
-                } else {
-                    Toast.makeText(MainActivity.this, "Erro" + response.code(),
-                            Toast.LENGTH_SHORT).show();
-                }
-            }
-
-            @Override
-            public void onFailure(Call<Usuario> call, Throwable t) {
-                Toast.makeText(MainActivity.this, "Erro" + t.getMessage(),
-                        Toast.LENGTH_SHORT).show();
-            }
-        });
+    private boolean enviaSenhaverificada() {
+        if (verificaSenha(senha.getText().toString().trim())) {
+            return true;
+        } else {
+            Toast.makeText(MainActivity.this, " senha inválido", Toast.LENGTH_SHORT).show();
+        }
+        return false;
     }
 
     private boolean verificaSenha(final String senha) {
@@ -83,15 +64,8 @@ public class MainActivity extends AppCompatActivity {
         return matcher.matches();
     }
 
-    private void enviaToast() {
-        if (enviaToastSenha() & enviaToasCpf()) {
-            Intent intent = new Intent(this, DadosDoUsuariosActivity.class);
-            startActivity(intent);
-        }
-    }
-
-    private boolean enviaToasCpf() {
-        if (ValidadorCpf.isCPF(getCpfConvertido())) {
+    private boolean enviaCpfVerificado() {
+        if (ValidadorCpf.isCPF(cpfConvertido())) {
             return true;
         } else {
             Toast.makeText(MainActivity.this, "CPF inválido", Toast.LENGTH_SHORT).show();
@@ -99,20 +73,11 @@ public class MainActivity extends AppCompatActivity {
         return false;
     }
 
-    private boolean enviaToastSenha() {
-        if (verificaSenha(senha.getText().toString().trim())) {
-            return true;
-        } else {
-            Toast.makeText(MainActivity.this, " senha inválido", Toast.LENGTH_SHORT).show();
-        }
-        return false;
-    }
-
     private void intanciandoUsuario() {
-        new Usuario(getCpfConvertido(), senha.toString());
+        new Usuario(cpfConvertido(), senha.toString());
     }
 
-    private String getCpfConvertido() {
+    private String cpfConvertido() {
         return cpf.getText().toString().replaceAll("[^0-9]", "");
     }
 
