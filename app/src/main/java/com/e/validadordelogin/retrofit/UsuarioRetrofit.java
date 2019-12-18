@@ -7,7 +7,7 @@ import retrofit2.converter.gson.GsonConverterFactory;
 
 public class UsuarioRetrofit {
 
-    public static final String BASE_URL = "https://diego.free.beeceptor.com/";
+    private static final String BASE_URL = "http://demo0775176.mockable.io/";
     private final UsuarioService usuarioService;
 
     public UsuarioRetrofit() {
