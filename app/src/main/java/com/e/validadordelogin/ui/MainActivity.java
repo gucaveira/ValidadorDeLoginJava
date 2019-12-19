@@ -55,7 +55,7 @@ public class MainActivity extends AppCompatActivity {
         Pattern pattern;
         Matcher matcher;
 
-        final String SENHA_PATTERN = "^(?=.*[0-9])(?=.*[a-z])(?=.*[A-Z])(?=.*[@#$%^&+=])(?=\\S+$).{4,}$";
+        final String SENHA_PATTERN = "^(?=.*[0-9])(?=.*[a-z])(?=.*[A-Z])(?=.*[@#$%^&+=!*()_;.,?:])(?=\\S+$).{4,}$";
 
         pattern = Pattern.compile(SENHA_PATTERN);
         matcher = pattern.matcher(senha);
@@ -87,7 +87,7 @@ public class MainActivity extends AppCompatActivity {
     private boolean enviaCpfVerificado() {
         if (ValidadorCpf.isCPF(cpfConvertido())) {
             return true;
-        } else {
+        } else if (!enviaEmailverificada()) {
             Toast.makeText(MainActivity.this, "CPF inválido", Toast.LENGTH_SHORT).show();
         }
         return false;
