@@ -10,9 +10,16 @@ import android.widget.Toast;
 import androidx.appcompat.app.AppCompatActivity;
 
 import com.e.validadordelogin.R;
+import com.e.validadordelogin.model.Extrato;
 import com.e.validadordelogin.model.Usuario;
 import com.e.validadordelogin.retrofit.UsuarioRetrofit;
 import com.e.validadordelogin.retrofit.service.UsuarioService;
+import com.google.gson.Gson;
+import com.google.gson.GsonBuilder;
+import com.google.gson.reflect.TypeToken;
+
+import java.lang.reflect.Type;
+import java.util.List;
 
 import retrofit2.Call;
 import retrofit2.Callback;
@@ -45,6 +52,7 @@ public class DadosDoUsuariosActivity extends AppCompatActivity {
             editor.commit();
             intent = new Intent(DadosDoUsuariosActivity.this, MainActivity.class);
             startActivity(intent);
+            this.finish();
         });
     }
 
@@ -81,11 +89,32 @@ public class DadosDoUsuariosActivity extends AppCompatActivity {
         });
     }
 
+    private void buscaExtroApi() {
+        UsuarioService usuarioService = new UsuarioRetrofit().getUsuarioService();
+        Call<List<Extrato>> callExtrato = usuarioService.
+                buscaExtradoApi(prf.getString("id", ""));
+
+        callExtrato.enqueue(new Callback<List<Extrato>>() {
+            @Override
+            public void onResponse(Call<List<Extrato>> call, Response<List<Extrato>> response) {
+                if (response.isSuccessful()) {
+                    List<Extrato> extrato = response.body();
+                    
+                }
+            }
+
+            @Override
+            public void onFailure(Call<List<Extrato>> call, Throwable t) {
+
+            }
+        });
+    }
+
     private void agrupaIdXml() {
         nome = findViewById(R.id.text_view_nome);
         idade = findViewById(R.id.text_view_idade);
         email = findViewById(R.id.text_view_email);
-        login = findViewById(R.id.text_view_login);
+        login = findViewById(R.id.text);
         sair = findViewById(R.id.btn_sair);
     }
 }

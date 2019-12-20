@@ -10,38 +10,40 @@ import android.widget.Toast;
 import androidx.appcompat.app.AppCompatActivity;
 
 import com.e.validadordelogin.R;
+import com.e.validadordelogin.VerificadorDeTexto;
+import com.e.validadordelogin.VerificadorSenha;
 import com.e.validadordelogin.model.Usuario;
 import com.e.validadordelogin.validacpf.ValidadorCpf;
-
-import java.util.regex.Matcher;
-import java.util.regex.Pattern;
 
 public class MainActivity extends AppCompatActivity {
 
     private EditText editCpfouEmail, editSenha;
     private Button btnEnviar;
-    Intent intent;
-    SharedPreferences pref;
-    SharedPreferences.Editor editor;
+    private SharedPreferences pref;
+    private SharedPreferences.Editor editor;
 
     @Override
     protected void onCreate(Bundle savedInstanceState) {
         super.onCreate(savedInstanceState);
         setContentView(R.layout.activity_main);
-        pref = getApplicationContext().getSharedPreferences("detalhe_usario", MODE_PRIVATE);
 
+        IntanciandoSharedPreferences();
         verificaUsuarioLogando();
         agrupaIdXml();
         intanciandoUsuario();
-
         btnEnviar();
+    }
+
+    private void IntanciandoSharedPreferences() {
+        pref = getApplicationContext().getSharedPreferences("detalhe_usario", MODE_PRIVATE);
     }
 
     private void verificaUsuarioLogando() {
         String idUser = pref.getString("id", "");
         if (!idUser.equals("")) {
-            intent = new Intent(MainActivity.this, DadosDoUsuariosActivity.class);
+            Intent intent = new Intent(MainActivity.this, DadosDoUsuariosActivity.class);
             startActivity(intent);
+            this.finish();
         }
     }
 
@@ -55,7 +57,7 @@ public class MainActivity extends AppCompatActivity {
         });
     }
 
-    private String editCpfOuEmailToString(EditText editCpfouEmail) {
+    private String pegaEditTextString(EditText editCpfouEmail) {
         return editCpfouEmail.getText().toString();
     }
 
@@ -63,44 +65,21 @@ public class MainActivity extends AppCompatActivity {
         if (enviaSenhaverificada() & (enviaCpfVerificado() || enviaEmailverificada())) {
             Intent intent = new Intent(this, DadosDoUsuariosActivity.class);
             startActivity(intent);
+            this.finish();
         }
     }
 
     private boolean enviaSenhaverificada() {
-        if (verificaSenha(editCpfOuEmailToString(editSenha).trim())) {
+        if (VerificadorSenha.verificaSenha(pegaEditTextString(editSenha).trim())) {
             return true;
         } else {
-            Toast.makeText(MainActivity.this, " editSenha inválido", Toast.LENGTH_SHORT).show();
+            Toast.makeText(MainActivity.this, "Senha inválido", Toast.LENGTH_SHORT).show();
         }
         return false;
     }
 
-    private boolean verificaSenha(final String senha) {
-        Pattern pattern;
-        Matcher matcher;
-
-        final String SENHA_PATTERN = "^(?=.*[0-9])(?=.*[a-z])(?=.*[A-Z])(?=.*[@#$%^&+=!*()_;.,?:])(?=\\S+$).{4,}$";
-
-        pattern = Pattern.compile(SENHA_PATTERN);
-        matcher = pattern.matcher(senha);
-
-        return matcher.matches();
-    }
-
-    public boolean verificaSeEhEmailOuCpf(final String senhaOuEmail) {
-        Pattern patterns;
-        Matcher matcher;
-
-        final String test = "^\\w+([.-]?\\w+)@\\w+([.-]?\\w+)(.\\w{1,3})+$";
-
-        patterns = Pattern.compile(test);
-        matcher = patterns.matcher(senhaOuEmail);
-
-        return matcher.matches();
-    }
-
     public boolean enviaEmailverificada() {
-        if (verificaSeEhEmailOuCpf(editCpfOuEmailToString(editCpfouEmail))) {
+        if (VerificadorDeTexto.verificaSeEhEmailOuCpf(pegaEditTextString(editCpfouEmail))) {
             return true;
         } else {
             Toast.makeText(this, "E-mail inválido", Toast.LENGTH_SHORT).show();
@@ -122,12 +101,12 @@ public class MainActivity extends AppCompatActivity {
     }
 
     private String cpfConvertido() {
-        return editCpfOuEmailToString(editCpfouEmail).replaceAll("[^0-9]", "");
+        return pegaEditTextString(editCpfouEmail).replaceAll("[^0-9]", "");
     }
 
     private void agrupaIdXml() {
-        editCpfouEmail = findViewById(R.id.editTextCpf);
-        editSenha = findViewById(R.id.editTextSenha);
+        editCpfouEmail = findViewById(R.id.edit_text_cpf);
+        editSenha = findViewById(R.id.edit_text_senha);
         btnEnviar = findViewById(R.id.btn_enviar);
     }
 }
