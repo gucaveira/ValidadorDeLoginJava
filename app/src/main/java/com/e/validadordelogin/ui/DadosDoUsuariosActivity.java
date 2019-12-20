@@ -1,6 +1,9 @@
 package com.e.validadordelogin.ui;
 
+import android.content.Intent;
+import android.content.SharedPreferences;
 import android.os.Bundle;
+import android.widget.Button;
 import android.widget.TextView;
 import android.widget.Toast;
 
@@ -17,17 +20,32 @@ import retrofit2.Response;
 
 public class DadosDoUsuariosActivity extends AppCompatActivity {
 
-    private TextView nome;
-    private TextView idade;
-    private TextView email;
+    private TextView nome, idade, login, email;
+    private Button sair;
+    SharedPreferences prf;
+    Intent intent;
+    SharedPreferences.Editor editor;
 
     @Override
     protected void onCreate(Bundle savedInstanceState) {
         super.onCreate(savedInstanceState);
         setContentView(R.layout.activity_dados_do_usuarios);
-
-        buscaUsuario();
         agrupaIdXml();
+        buscaUsuario();
+
+        prf = getSharedPreferences("detalhe_usario", MODE_PRIVATE);
+        login.setText(prf.getString("cpf_ou_email", ""));
+        btnSair();
+    }
+
+    private void btnSair() {
+        sair.setOnClickListener(v -> {
+            editor = prf.edit();
+            editor.clear();
+            editor.commit();
+            intent = new Intent(DadosDoUsuariosActivity.this, MainActivity.class);
+            startActivity(intent);
+        });
     }
 
     private void buscaUsuario() {
@@ -44,6 +62,10 @@ public class DadosDoUsuariosActivity extends AppCompatActivity {
                     nome.setText(user.getNome());
                     idade.setText(user.getIdade());
                     email.setText(user.getEmail());
+                    String idUsuario = user.getIdUsuario();
+                    editor = prf.edit();
+                    editor.putString("id", idUsuario);
+                    editor.commit();
 
                 } else {
                     Toast.makeText(DadosDoUsuariosActivity.this, "Erro" + response.code(),
@@ -63,5 +85,7 @@ public class DadosDoUsuariosActivity extends AppCompatActivity {
         nome = findViewById(R.id.text_view_nome);
         idade = findViewById(R.id.text_view_idade);
         email = findViewById(R.id.text_view_email);
+        login = findViewById(R.id.text_view_login);
+        sair = findViewById(R.id.btn_sair);
     }
 }

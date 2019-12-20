@@ -1,6 +1,7 @@
 package com.e.validadordelogin.ui;
 
 import android.content.Intent;
+import android.content.SharedPreferences;
 import android.os.Bundle;
 import android.widget.Button;
 import android.widget.EditText;
@@ -17,22 +18,45 @@ import java.util.regex.Pattern;
 
 public class MainActivity extends AppCompatActivity {
 
-    private EditText cpf;
-    private EditText senha;
+    private EditText editCpfouEmail, editSenha;
     private Button btnEnviar;
+    Intent intent;
+    SharedPreferences pref;
+    SharedPreferences.Editor editor;
 
     @Override
     protected void onCreate(Bundle savedInstanceState) {
         super.onCreate(savedInstanceState);
         setContentView(R.layout.activity_main);
+        pref = getApplicationContext().getSharedPreferences("detalhe_usario", MODE_PRIVATE);
 
+        verificaUsuarioLogando();
         agrupaIdXml();
         intanciandoUsuario();
+
         btnEnviar();
     }
 
+    private void verificaUsuarioLogando() {
+        String idUser = pref.getString("id", "");
+        if (!idUser.equals("")) {
+            intent = new Intent(MainActivity.this, DadosDoUsuariosActivity.class);
+            startActivity(intent);
+        }
+    }
+
     private void btnEnviar() {
-        btnEnviar.setOnClickListener(click -> chamaProximaTela());
+        btnEnviar.setOnClickListener(v -> {
+            editor = pref.edit();
+            editor.putString("cpf_ou_email", editCpfouEmail.getText().toString());
+            editor.putString("edit_senha", editSenha.getText().toString());
+            editor.commit();
+            chamaProximaTela();
+        });
+    }
+
+    private String editCpfOuEmailToString(EditText editCpfouEmail) {
+        return editCpfouEmail.getText().toString();
     }
 
     private void chamaProximaTela() {
@@ -43,10 +67,10 @@ public class MainActivity extends AppCompatActivity {
     }
 
     private boolean enviaSenhaverificada() {
-        if (verificaSenha(senha.getText().toString().trim())) {
+        if (verificaSenha(editCpfOuEmailToString(editSenha).trim())) {
             return true;
         } else {
-            Toast.makeText(MainActivity.this, " senha inválido", Toast.LENGTH_SHORT).show();
+            Toast.makeText(MainActivity.this, " editSenha inválido", Toast.LENGTH_SHORT).show();
         }
         return false;
     }
@@ -76,7 +100,7 @@ public class MainActivity extends AppCompatActivity {
     }
 
     public boolean enviaEmailverificada() {
-        if (verificaSeEhEmailOuCpf(cpf.getText().toString())) {
+        if (verificaSeEhEmailOuCpf(editCpfOuEmailToString(editCpfouEmail))) {
             return true;
         } else {
             Toast.makeText(this, "E-mail inválido", Toast.LENGTH_SHORT).show();
@@ -94,16 +118,16 @@ public class MainActivity extends AppCompatActivity {
     }
 
     private void intanciandoUsuario() {
-        new Usuario(cpfConvertido(), senha.toString());
+        new Usuario(cpfConvertido(), editSenha.toString());
     }
 
     private String cpfConvertido() {
-        return cpf.getText().toString().replaceAll("[^0-9]", "");
+        return editCpfOuEmailToString(editCpfouEmail).replaceAll("[^0-9]", "");
     }
 
     private void agrupaIdXml() {
-        cpf = findViewById(R.id.editTextCpf);
-        senha = findViewById(R.id.editTextSenha);
+        editCpfouEmail = findViewById(R.id.editTextCpf);
+        editSenha = findViewById(R.id.editTextSenha);
         btnEnviar = findViewById(R.id.btn_enviar);
     }
 }

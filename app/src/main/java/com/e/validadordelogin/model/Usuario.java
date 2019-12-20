@@ -15,6 +15,9 @@ public class Usuario implements Serializable {
     @SerializedName("email")
     private String email;
 
+    @SerializedName("id")
+    private String idUsuario;
+
     public Usuario(String cpf, String senha) {
     }
 
@@ -28,5 +31,13 @@ public class Usuario implements Serializable {
 
     public String getEmail() {
         return email;
+    }
+
+    public String getIdUsuario() {
+        return idUsuario;
+    }
+
+    public void setIdUsuario(String idUsuario) {
+        this.idUsuario = idUsuario;
     }
 }
