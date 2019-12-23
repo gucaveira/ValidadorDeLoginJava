@@ -3,6 +3,7 @@ package com.e.validadordelogin.ui;
 import android.content.Intent;
 import android.content.SharedPreferences;
 import android.os.Bundle;
+import android.util.Log;
 import android.widget.Button;
 import android.widget.TextView;
 import android.widget.Toast;
@@ -10,16 +11,10 @@ import android.widget.Toast;
 import androidx.appcompat.app.AppCompatActivity;
 
 import com.e.validadordelogin.R;
-import com.e.validadordelogin.model.Extrato;
+import com.e.validadordelogin.model.Fatura;
 import com.e.validadordelogin.model.Usuario;
 import com.e.validadordelogin.retrofit.UsuarioRetrofit;
 import com.e.validadordelogin.retrofit.service.UsuarioService;
-import com.google.gson.Gson;
-import com.google.gson.GsonBuilder;
-import com.google.gson.reflect.TypeToken;
-
-import java.lang.reflect.Type;
-import java.util.List;
 
 import retrofit2.Call;
 import retrofit2.Callback;
@@ -32,16 +27,19 @@ public class DadosDoUsuariosActivity extends AppCompatActivity {
     SharedPreferences prf;
     Intent intent;
     SharedPreferences.Editor editor;
+    private TextView extrato;
 
     @Override
     protected void onCreate(Bundle savedInstanceState) {
         super.onCreate(savedInstanceState);
         setContentView(R.layout.activity_dados_do_usuarios);
-        agrupaIdXml();
+        intanciaViews();
         buscaUsuario();
+
 
         prf = getSharedPreferences("detalhe_usario", MODE_PRIVATE);
         login.setText(prf.getString("cpf_ou_email", ""));
+        buscaExtratoApi();
         btnSair();
     }
 
@@ -58,8 +56,8 @@ public class DadosDoUsuariosActivity extends AppCompatActivity {
 
     private void buscaUsuario() {
 
-        UsuarioService service = new UsuarioRetrofit().getUsuarioService();
-        Call<Usuario> callUsuario = service.buscaUsuarioApi();
+        UsuarioService serviceBuscaUsario = new UsuarioRetrofit().getUsuarioService();
+        Call<Usuario> callUsuario = serviceBuscaUsario.buscaUsuarioApi();
 
         callUsuario.enqueue(new Callback<Usuario>() {
             @Override
@@ -89,32 +87,37 @@ public class DadosDoUsuariosActivity extends AppCompatActivity {
         });
     }
 
-    private void buscaExtroApi() {
-        UsuarioService usuarioService = new UsuarioRetrofit().getUsuarioService();
-        Call<List<Extrato>> callExtrato = usuarioService.
-                buscaExtradoApi(prf.getString("id", ""));
+    private void buscaExtratoApi() {
+        UsuarioService buscaExtrato = new UsuarioRetrofit().getUsuarioService();
+        Call<Fatura> callExtrato = buscaExtrato.
+                buscaExtrado(prf.getString("id", ""));
 
-        callExtrato.enqueue(new Callback<List<Extrato>>() {
+        callExtrato.enqueue(new Callback<Fatura>() {
             @Override
-            public void onResponse(Call<List<Extrato>> call, Response<List<Extrato>> response) {
+            public void onResponse(Call<Fatura> call, Response<Fatura> response) {
                 if (response.isSuccessful()) {
-                    List<Extrato> extrato = response.body();
-                    
+                    String texto = "";
+                    Fatura extratoApi = response.body();
+                    for (Fatura.ItemFatura item : extratoApi.lista) {
+                        texto += item.titulo + " \n";
+                    }
+                    extrato.setText(texto);
                 }
             }
 
             @Override
-            public void onFailure(Call<List<Extrato>> call, Throwable t) {
-
+            public void onFailure(Call<Fatura> call, Throwable t) {
+                Log.i("ERROR EXTRATO", "FALHA");
             }
         });
     }
 
-    private void agrupaIdXml() {
+    private void intanciaViews() {
         nome = findViewById(R.id.text_view_nome);
         idade = findViewById(R.id.text_view_idade);
         email = findViewById(R.id.text_view_email);
         login = findViewById(R.id.text);
         sair = findViewById(R.id.btn_sair);
+        extrato = findViewById(R.id.text_view_extrato);
     }
 }

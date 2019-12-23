@@ -1,9 +1,7 @@
 package com.e.validadordelogin.retrofit.service;
 
-import com.e.validadordelogin.model.Extrato;
+import com.e.validadordelogin.model.Fatura;
 import com.e.validadordelogin.model.Usuario;
-
-import java.util.List;
 
 import retrofit2.Call;
 import retrofit2.http.GET;
@@ -16,5 +14,5 @@ public interface UsuarioService {
     Call<Usuario> buscaUsuarioApi();
 
     @GET("list/{id}")
-    Call<List<Extrato>> buscaExtradoApi(@Path("id")String id);
+    Call<Fatura> buscaExtrado(@Path("id")String id);
 }
