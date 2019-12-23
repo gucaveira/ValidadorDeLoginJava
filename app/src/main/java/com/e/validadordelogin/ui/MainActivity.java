@@ -10,10 +10,10 @@ import android.widget.Toast;
 import androidx.appcompat.app.AppCompatActivity;
 
 import com.e.validadordelogin.R;
-import com.e.validadordelogin.VerificadorDeTexto;
-import com.e.validadordelogin.VerificadorSenha;
+import com.e.validadordelogin.ui.validador.VerificadorDeTexto;
+import com.e.validadordelogin.ui.validador.VerificadorSenha;
 import com.e.validadordelogin.model.Usuario;
-import com.e.validadordelogin.validacpf.ValidadorCpf;
+import com.e.validadordelogin.ui.validador.ValidadorCpf;
 
 public class MainActivity extends AppCompatActivity {
 

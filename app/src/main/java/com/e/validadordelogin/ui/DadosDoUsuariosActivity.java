@@ -12,6 +12,7 @@ import androidx.appcompat.app.AppCompatActivity;
 
 import com.e.validadordelogin.R;
 import com.e.validadordelogin.model.Fatura;
+import com.e.validadordelogin.model.ItemFatura;
 import com.e.validadordelogin.model.Usuario;
 import com.e.validadordelogin.retrofit.UsuarioRetrofit;
 import com.e.validadordelogin.retrofit.service.UsuarioService;
@@ -22,12 +23,11 @@ import retrofit2.Response;
 
 public class DadosDoUsuariosActivity extends AppCompatActivity {
 
-    private TextView nome, idade, login, email;
+    private TextView nome, idade, login, email, textViewExtrato;
     private Button sair;
     SharedPreferences prf;
     Intent intent;
     SharedPreferences.Editor editor;
-    private TextView extrato;
 
     @Override
     protected void onCreate(Bundle savedInstanceState) {
@@ -36,10 +36,9 @@ public class DadosDoUsuariosActivity extends AppCompatActivity {
         intanciaViews();
         buscaUsuario();
 
-
         prf = getSharedPreferences("detalhe_usario", MODE_PRIVATE);
         login.setText(prf.getString("cpf_ou_email", ""));
-        buscaExtratoApi();
+        buscaFaturaApi();
         btnSair();
     }
 
@@ -47,7 +46,7 @@ public class DadosDoUsuariosActivity extends AppCompatActivity {
         sair.setOnClickListener(v -> {
             editor = prf.edit();
             editor.clear();
-            editor.commit();
+            editor.apply();
             intent = new Intent(DadosDoUsuariosActivity.this, MainActivity.class);
             startActivity(intent);
             this.finish();
@@ -56,8 +55,8 @@ public class DadosDoUsuariosActivity extends AppCompatActivity {
 
     private void buscaUsuario() {
 
-        UsuarioService serviceBuscaUsario = new UsuarioRetrofit().getUsuarioService();
-        Call<Usuario> callUsuario = serviceBuscaUsario.buscaUsuarioApi();
+        UsuarioService usuarioService = new UsuarioRetrofit().getUsuarioService();
+        Call<Usuario> callUsuario = usuarioService.buscaUsuarioApi();
 
         callUsuario.enqueue(new Callback<Usuario>() {
             @Override
@@ -87,21 +86,22 @@ public class DadosDoUsuariosActivity extends AppCompatActivity {
         });
     }
 
-    private void buscaExtratoApi() {
-        UsuarioService buscaExtrato = new UsuarioRetrofit().getUsuarioService();
-        Call<Fatura> callExtrato = buscaExtrato.
-                buscaExtrado(prf.getString("id", ""));
+    private void buscaFaturaApi() {
+        UsuarioService usuarioService = new UsuarioRetrofit().getUsuarioService();
+        Call<Fatura> callFatura = usuarioService.
+                buscaFatura(prf.getString("id", ""));
 
-        callExtrato.enqueue(new Callback<Fatura>() {
+        callFatura.enqueue(new Callback<Fatura>() {
             @Override
             public void onResponse(Call<Fatura> call, Response<Fatura> response) {
                 if (response.isSuccessful()) {
                     String texto = "";
-                    Fatura extratoApi = response.body();
-                    for (Fatura.ItemFatura item : extratoApi.lista) {
-                        texto += item.titulo + " \n";
+                    Fatura fatura = response.body();
+
+                    for (ItemFatura itens : fatura.getItemFaturas()) {
+                        texto += itens.mostraPreco(itens.getValor()) + " \n";
                     }
-                    extrato.setText(texto);
+                    textViewExtrato.setText(texto);
                 }
             }
 
@@ -118,6 +118,6 @@ public class DadosDoUsuariosActivity extends AppCompatActivity {
         email = findViewById(R.id.text_view_email);
         login = findViewById(R.id.text);
         sair = findViewById(R.id.btn_sair);
-        extrato = findViewById(R.id.text_view_extrato);
+        textViewExtrato = findViewById(R.id.text_view_extrato);
     }
 }

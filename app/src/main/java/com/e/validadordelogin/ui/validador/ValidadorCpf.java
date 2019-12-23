@@ -1,4 +1,4 @@
-package com.e.validadordelogin.validacpf;
+package com.e.validadordelogin.ui.validador;
 
 import java.util.InputMismatchException;
 

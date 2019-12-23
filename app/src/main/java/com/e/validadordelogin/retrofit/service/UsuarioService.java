@@ -14,5 +14,5 @@ public interface UsuarioService {
     Call<Usuario> buscaUsuarioApi();
 
     @GET("list/{id}")
-    Call<Fatura> buscaExtrado(@Path("id")String id);
+    Call<Fatura> buscaFatura(@Path("id")String id);
 }

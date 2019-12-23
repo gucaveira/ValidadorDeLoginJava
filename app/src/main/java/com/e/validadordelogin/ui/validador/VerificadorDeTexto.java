@@ -1,4 +1,4 @@
-package com.e.validadordelogin;
+package com.e.validadordelogin.ui.validador;
 
 import java.util.regex.Matcher;
 import java.util.regex.Pattern;
